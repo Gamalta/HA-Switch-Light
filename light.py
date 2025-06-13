@@ -1,3 +1,6 @@
+from datetime import datetime
+import asyncio
+import logging
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.components.light import (
     LightEntity,
@@ -14,33 +17,42 @@ from homeassistant.components.light import (
     ATTR_RGBWW_COLOR,
     ATTR_SUPPORTED_COLOR_MODES,
     ATTR_XY_COLOR,
-    LightEntityFeature,
-    ColorMode,
-    valid_supported_color_modes,
 )
 from homeassistant.const import STATE_ON
 from .const import DOMAIN
-import logging
 
 _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     data = config_entry.data
-    async_add_entities([
-        DynamicControlledLight(
-            hass,
-            data["light_name"],
-            data["switch_entity"],
-            data["light_entity"]
-        )
-    ])
+    light_entity = hass.states.get(data["light_entity"])
+    switch_entity = hass.states.get(data["switch_entity"])
 
+    if await _wait_for_entities(light_entity, switch_entity):
+        async_add_entities([
+            DynamicControlledLight(
+                hass,
+                data["light_name"],
+                switch_entity,
+                light_entity
+            )
+        ])
+    else:
+        _LOGGER.error("Entities %s or %s are invalid ou unavailable.", data["light_entity"], data["switch_entity"])
+
+async def _wait_for_entities(light_entity, switch_entity, timeout=10):
+    start_time = datetime.now()
+    while (datetime.now() - start_time).total_seconds() < timeout:
+        if light_entity and switch_entity:
+            return True
+        await asyncio.sleep(1)
+    return False
 class DynamicControlledLight(LightEntity):
-    def __init__(self, hass, light_name, switch_entity_id, light_entity_id):
+    def __init__(self, hass, light_name, switch_entity, light_entity):
         self._hass = hass
         self._light_name = light_name
-        self._switch_entity_id = switch_entity_id
-        self._light_entity_id = light_entity_id
+        self._switch_entity = switch_entity
+        self._light_entity = light_entity
 
         self._attr_brightness = self._get_light_attr(ATTR_BRIGHTNESS)
         self._attr_color_mode = self._get_light_attr(ATTR_COLOR_MODE)
@@ -53,11 +65,8 @@ class DynamicControlledLight(LightEntity):
         self._attr_rgb_color = self._get_light_attr(ATTR_RGB_COLOR)
         self._attr_rgbw_color = self._get_light_attr(ATTR_RGBW_COLOR)
         self._attr_rgbww_color = self._get_light_attr(ATTR_RGBWW_COLOR)
-        _LOGGER.error('_attr_brightness %s', self._get_light_attr(ATTR_BRIGHTNESS))
-        _LOGGER.error('_attr_supported_color_modes %s', self._get_light_attr(ATTR_SUPPORTED_COLOR_MODES))
-        _LOGGER.error('_attr_supported_features %s', self._get_light_attr('supported_features'))
-        self._attr_supported_color_modes = self._get_light_attr(ATTR_SUPPORTED_COLOR_MODES, [ColorMode.ONOFF])
-        self._attr_supported_features = self._get_light_attr('supported_features', 0)
+        self._attr_supported_color_modes = self._get_light_attr(ATTR_SUPPORTED_COLOR_MODES)
+        self._attr_supported_features = self._get_light_attr('supported_features')
         self._attr_xy_color = self._get_light_attr(ATTR_XY_COLOR)
 
     @property
@@ -80,9 +89,9 @@ class DynamicControlledLight(LightEntity):
     def _get_entity_state(self, entity_id):
         return self._hass.states.get(entity_id)
 
-    def _get_light_attr(self, attr, fallback=None):
+    def _get_light_attr(self, attr):
         state = self._get_entity_state(self._light_entity_id)
-        return state.attributes.get(attr, fallback) if state else None
+        return state.attributes.get(attr) if state else None
 
     def _get_switch_attr(self, attr):
         state = self._get_entity_state(self._switch_entity_id)
