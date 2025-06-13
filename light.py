@@ -14,6 +14,7 @@ from homeassistant.components.light import (
     ATTR_RGBWW_COLOR,
     ATTR_SUPPORTED_COLOR_MODES,
     ATTR_XY_COLOR,
+    LightEntityFeature,
     ColorMode,
     valid_supported_color_modes,
 )
@@ -49,8 +50,8 @@ class DynamicControlledLight(LightEntity):
         self._attr_rgb_color = self._get_light_attr(ATTR_RGB_COLOR)
         self._attr_rgbw_color = self._get_light_attr(ATTR_RGBW_COLOR)
         self._attr_rgbww_color = self._get_light_attr(ATTR_RGBWW_COLOR)
-        self._attr_supported_color_modes = valid_supported_color_modes(self._get_light_attr(ATTR_SUPPORTED_COLOR_MODES) or {ColorMode.ONOFF})
-        self._attr_supported_features = self._get_light_attr('supported_features') or 0
+        self._attr_supported_color_modes = self._get_light_attr(ATTR_SUPPORTED_COLOR_MODES, [ColorMode.ONOFF])
+        self._attr_supported_features = self._get_light_attr('supported_features', {})
         self._attr_xy_color = self._get_light_attr(ATTR_XY_COLOR)
 
     @property
@@ -73,9 +74,9 @@ class DynamicControlledLight(LightEntity):
     def _get_entity_state(self, entity_id):
         return self._hass.states.get(entity_id)
 
-    def _get_light_attr(self, attr):
+    def _get_light_attr(self, attr, fallback=None):
         state = self._get_entity_state(self._light_entity_id)
-        return state.attributes.get(attr) if state else None
+        return state.attributes.get(attr, fallback) if state else None
 
     def _get_switch_attr(self, attr):
         state = self._get_entity_state(self._switch_entity_id)
