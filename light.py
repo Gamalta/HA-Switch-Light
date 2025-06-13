@@ -17,6 +17,9 @@ from homeassistant.components.light import (
 )
 from homeassistant.const import STATE_ON
 from .const import DOMAIN
+import logging
+
+_LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     data = config_entry.data
@@ -47,6 +50,8 @@ class DynamicControlledLight(LightEntity):
         self._attr_rgb_color = self._get_light_attr(ATTR_RGB_COLOR)
         self._attr_rgbw_color = self._get_light_attr(ATTR_RGBW_COLOR)
         self._attr_rgbww_color = self._get_light_attr(ATTR_RGBWW_COLOR)
+        _LOGGER.info('_attr_supported_color_modes %s', self._get_light_attr(ATTR_SUPPORTED_COLOR_MODES))
+        _LOGGER.info('_attr_supported_features %s', self._get_light_attr('supported_features'))
         self._attr_supported_color_modes = self._get_light_attr(ATTR_SUPPORTED_COLOR_MODES) or []
         self._attr_supported_features = self._get_light_attr('supported_features') or 0
         self._attr_xy_color = self._get_light_attr(ATTR_XY_COLOR)
