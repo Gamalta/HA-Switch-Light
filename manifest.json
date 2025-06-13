@@ -1,0 +1,8 @@
+{
+    "domain": "switch-light",
+    "name": "Switch Light",
+    "version": "1.0.0",
+    "config_flow": true,
+    "dependencies": [],
+    "codeowners": ["@Gamalta"]
+}
