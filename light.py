@@ -16,6 +16,7 @@ from homeassistant.components.light import (
     ATTR_EFFECT_LIST,
 )
 from homeassistant.const import STATE_ON
+from .const import DOMAIN
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     data = config_entry.data
@@ -38,9 +39,9 @@ class DynamicControlledLight(LightEntity):
     @property
     def device_info(self):
         return {
-            "identifiers": {(self._hass.domain, f"{self._switch_entity_id}_{self._light_entity_id}")},
+            "identifiers": {(DOMAIN, f"{self._switch_entity_id}_{self._light_entity_id}")},
             "name": self._light_name,
-            "manufacturer": "Elio",
+            "manufacturer": "Gamalta",
             "model": "Controlled Light",
         }
 

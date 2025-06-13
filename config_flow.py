@@ -1,8 +1,9 @@
 from homeassistant import config_entries
 from homeassistant.core import callback
 import voluptuous as vol
+from .const import DOMAIN
 
-class SwitchLightConfigFlow(config_entries.ConfigFlow, domain="switch-light"):
+class SwitchLightConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
 
     async def async_step_user(self, user_input=None):

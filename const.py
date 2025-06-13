@@ -1,0 +1,1 @@
+DOMAIN = "switch-light"
