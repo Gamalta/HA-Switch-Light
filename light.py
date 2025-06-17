@@ -38,19 +38,6 @@ class DynamicControlledLight(LightEntity):
         self._switch_entity_id = switch_entity_id
         self._light_entity_id = light_entity_id
 
-        self._attr_brightness = self._get_light_attr(ATTR_BRIGHTNESS)
-        self._attr_color_mode = self._get_light_attr(ATTR_COLOR_MODE)
-        self._attr_color_temp_kelvin = self._get_light_attr(ATTR_COLOR_TEMP_KELVIN)
-        self._attr_effect_list = self._get_light_attr(ATTR_EFFECT_LIST)
-        self._attr_effect = self._get_light_attr(ATTR_EFFECT)
-        self._attr_hs_color = self._get_light_attr(ATTR_HS_COLOR)
-        self._attr_max_color_temp_kelvin = self._get_light_attr(ATTR_MIN_COLOR_TEMP_KELVIN)
-        self._attr_min_color_temp_kelvin = self._get_light_attr(ATTR_MAX_COLOR_TEMP_KELVIN)
-        self._attr_rgb_color = self._get_light_attr(ATTR_RGB_COLOR)
-        self._attr_rgbw_color = self._get_light_attr(ATTR_RGBW_COLOR)
-        self._attr_rgbww_color = self._get_light_attr(ATTR_RGBWW_COLOR)
-        self._attr_xy_color = self._get_light_attr(ATTR_XY_COLOR)
-
     @property
     def device_info(self):
         return {
@@ -65,12 +52,60 @@ class DynamicControlledLight(LightEntity):
         return self._light_name
 
     @property
+    def brightness(self):
+        return self._get_light_attr(ATTR_BRIGHTNESS)
+
+    @property
+    def color_mode(self):
+        return self._get_light_attr(ATTR_COLOR_MODE)
+
+    @property
+    def color_temp_kelvin(self):
+        return self._get_light_attr(ATTR_COLOR_TEMP_KELVIN)
+
+    @property
+    def effect_list(self):
+        return self._get_light_attr(ATTR_EFFECT_LIST)
+
+    @property
+    def effect(self):
+        return self._get_light_attr(ATTR_EFFECT)
+
+    @property
+    def hs_color(self):
+        return self._get_light_attr(ATTR_HS_COLOR)
+
+    @property
+    def max_color_temp_kelvin(self):
+        return self._get_light_attr(ATTR_MAX_COLOR_TEMP_KELVIN)
+
+    @property
+    def min_color_temp_kelvin(self):
+        return self._get_light_attr(ATTR_MIN_COLOR_TEMP_KELVIN)
+
+    @property
     def supported_color_modes(self):
         return self._get_light_attr(ATTR_SUPPORTED_COLOR_MODES) or [ColorMode.ONOFF]
 
     @property
     def supported_features(self):
         return self._get_light_attr('supported_features') or LightEntityFeature.TRANSITION
+
+    @property
+    def rgb_color(self):
+        return self._get_light_attr(ATTR_RGB_COLOR)
+
+    @property
+    def rgbw_color(self):
+        return self._get_light_attr(ATTR_RGBW_COLOR)
+
+    @property
+    def rgbww_color(self):
+        return self._get_light_attr(ATTR_RGBWW_COLOR)
+
+    @property
+    def xy_color(self):
+        return self._get_light_attr(ATTR_XY_COLOR)
 
     @property
     def icon(self):
