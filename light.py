@@ -49,8 +49,6 @@ class DynamicControlledLight(LightEntity):
         self._attr_rgb_color = self._get_light_attr(ATTR_RGB_COLOR)
         self._attr_rgbw_color = self._get_light_attr(ATTR_RGBW_COLOR)
         self._attr_rgbww_color = self._get_light_attr(ATTR_RGBWW_COLOR)
-        self._attr_supported_color_modes = self._get_light_attr(ATTR_SUPPORTED_COLOR_MODES) or [ColorMode.ONOFF]
-        self._attr_supported_features = self._get_light_attr('supported_features') or LightEntityFeature.TRANSITION
         self._attr_xy_color = self._get_light_attr(ATTR_XY_COLOR)
 
     @property
@@ -65,6 +63,14 @@ class DynamicControlledLight(LightEntity):
     @property
     def name(self):
         return self._light_name
+
+    @property
+    def supported_color_modes(self):
+        return self._get_light_attr(ATTR_SUPPORTED_COLOR_MODES) or [ColorMode.ONOFF]
+
+    @property
+    def supported_features(self):
+        return self._get_light_attr('supported_features') or LightEntityFeature.TRANSITION
 
     @property
     def icon(self):
